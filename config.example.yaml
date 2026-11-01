@@ -1,0 +1,64 @@
+# Copy to ~/.config/argus-netmon/config.yaml or ./config.yaml
+
+app_id: argus-netmon
+display_name: Argus
+
+lan:
+  interface: wlp0s20f3
+  gateway: 192.168.1.1
+  # TCP ports to try on the gateway (Keenetic web UI)
+  ports: [80, 443]
+
+interval_sec: 20
+# Require this many consecutive cycles before changing state
+fail_threshold: 2
+ok_threshold: 2
+
+# Prefer SO_BINDTODEVICE for real WAN view (works when Throne Auto Redirect /
+# Strict Route are off — your current settings). Throne process Direct is
+# optional extra; match basename of /proc/self/exe (often python3.10).
+bind_device: wlp0s20f3
+use_bind_device: true
+
+timeout_sec: 4
+
+probes:
+  # Whitelist-only allow-list
+  whitelist:
+    - { host: gosuslugi.ru, port: 443, path: /, tls: true }
+    - { host: ya.ru, port: 443, path: /, tls: true }
+    - { host: nalog.ru, port: 443, path: /, tls: true }
+  # RU-zone beyond whitelist (not full internet)
+  domestic:
+    - { host: esad7.ru, port: 443, path: /, tls: true }
+    - { host: pikabu.ru, port: 443, path: /, tls: true }
+  # Full open
+  open:
+    - { host: github.com, port: 443, path: /, tls: true }
+    - { host: wikipedia.org, port: 443, path: /, tls: true }
+    - { host: example.com, port: 443, path: /, tls: true }
+
+speed:
+  enabled: true
+  # Run every N monitor cycles while state is OK/DEGRADED
+  every_n_cycles: 3
+  url_host: speed.cloudflare.com
+  url_path: /__down?bytes=262144
+  port: 443
+  tls: true
+  # Below this → DEGRADED (heuristic for 3G / bad radio)
+  degraded_kbps: 800
+  # Soft hint in tooltip only
+  likely_3g_kbps: 2500
+
+notify:
+  enabled: true
+  # Edge-triggered only (on state change)
+
+autostart:
+  enabled: false
+
+# Reserved for Keenetic Omni RCI (phase 2)
+modem:
+  enabled: false
+  base_url: http://192.168.1.1

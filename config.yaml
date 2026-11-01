@@ -1,0 +1,53 @@
+app_id: argus-netmon
+display_name: Argus
+
+lan:
+  interface: wlp0s20f3
+  gateway: 192.168.1.1
+  ports: [80, 443]
+
+interval_sec: 20
+fail_threshold: 2
+ok_threshold: 2
+
+# Real WAN path (bypasses Throne when Auto Redirect / Strict Route are off).
+# Connection refused on open sites here usually means mobile whitelist — not a bug.
+bind_device: wlp0s20f3
+use_bind_device: true
+timeout_sec: 4
+
+probes:
+  # Level: whitelist-only (gov + majors on the mobile allow-list).
+  whitelist:
+    - { host: gosuslugi.ru, port: 443, path: /, tls: true }
+    - { host: ya.ru, port: 443, path: /, tls: true }
+    - { host: nalog.ru, port: 443, path: /, tls: true }
+  # Level: RU-zone (reachable beyond whitelist, still not full internet).
+  domestic:
+    - { host: esad7.ru, port: 443, path: /, tls: true }
+    - { host: pikabu.ru, port: 443, path: /, tls: true }
+  # Level: full open (foreign).
+  open:
+    - { host: github.com, port: 443, path: /, tls: true }
+    - { host: wikipedia.org, port: 443, path: /, tls: true }
+    - { host: example.com, port: 443, path: /, tls: true }
+
+speed:
+  enabled: true
+  every_n_cycles: 3
+  url_host: speed.cloudflare.com
+  url_path: /__down?bytes=262144
+  port: 443
+  tls: true
+  degraded_kbps: 800
+  likely_3g_kbps: 2500
+
+notify:
+  enabled: true
+
+autostart:
+  enabled: false
+
+modem:
+  enabled: false
+  base_url: http://192.168.1.1
